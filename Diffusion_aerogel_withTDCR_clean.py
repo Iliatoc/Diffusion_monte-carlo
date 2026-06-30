@@ -38,6 +38,7 @@ class Photon:
                             transform_into_str(self.y_shift), transform_into_str(self.z_shift))
         return new_class"""
 
+
 def data_for_cylinder_along_z(center_x, center_y, loc_radius, height_z):
     loc_z = np.linspace(-height_z/2, height_z/2, 50)
     loc_theta = np.linspace(0, 2*np.pi, 50)
@@ -154,19 +155,23 @@ def cumulative_probability_distance():
     return loc_interaction_array
 
 
-number_of_photons_per_decay = 200
-ph_yield_step = 1000
-ph_per_decay_array = np.arange(10, 10010 + ph_yield_step, ph_yield_step)
+number_of_photons_per_decay = 50
+ph_yield_step = 10
+#ph_per_decay_array = np.arange(10, 50 + ph_yield_step, ph_yield_step)
+#ph_per_decay_array = np.array([10, 20, 30, 40, 50, 60, 100, 150, 200, 300, 400, 500])
+ph_per_decay_array = np.array([1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20])
+#ph_per_decay_array = np.arange(10, 260, 10)
+ph_per_decay_array_core = np.array([1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20])
 num_steps = 1
-laser_r = 2 * 10**3
-laser_step = 10
+laser_r = int(1.25 * 10**4)
+laser_step = 100
 laser_array = circle_points(laser_r, laser_step)
 laser_array_length, trashy = laser_array.shape
 print("Laser array shape = ", laser_array_length)
 #print("Laser array = ", laser_array)
 # aerogel dimensions
 height = 3 * 10**4     # microns, micrometers everywhere
-radius = 1.25 * 10**4
+radius = int(1.25 * 10**4)
 n_air = 1                # index of refraction
 n_aerogel = 1.15            # index of refraction
 angle_of_total_reflection = np.arcsin(n_air / n_aerogel)
@@ -174,6 +179,7 @@ step = 1                   # microns
 #chance_of_interaction_array = [0.0001, 0.005, 0.01, 0.02, 0.025, 0.03]
 #chance_of_interaction_array = [0.04, 0.05]
 chance_of_interaction_per_micron = 0.0265   # percent
+#chance_of_interaction_per_micron = 0.0001
 start_array_step = 10**3    # step for the source of light
 # cylinder_start_array_x = np.zeros(int(height * radius * radius * 4 / (start_array_step**2)))
 # cylinder_start_array_y = np.zeros(int(height * radius * radius * 4 / (start_array_step**2)))
@@ -181,24 +187,29 @@ start_array_step = 10**3    # step for the source of light
 cylinder_start_array_x = np.array([0])
 cylinder_start_array_y = np.array([0])
 cylinder_start_array_z = np.array([0])
-for c_s_i_v in range(int(height / start_array_step)):
-    for c_s_i_hx in range(int(radius * 2 / start_array_step)):
-        for c_s_i_hy in range(int(radius * 2 / start_array_step)):
-            loc_index_csi = c_s_i_v * int(radius * radius * 4 / (start_array_step**2)) + c_s_i_hx * int(radius * 2 / start_array_step) + c_s_i_hy
-            loc_csi_z_coord = c_s_i_v * start_array_step - (height / 2) + (height / (start_array_step * 2))
-            loc_csi_x_coord = c_s_i_hx * start_array_step - radius + (radius / start_array_step)
-            loc_csi_y_coord = c_s_i_hy * start_array_step - radius + (radius / start_array_step)
-            if loc_csi_x_coord**2 + loc_csi_y_coord**2 <= radius**2:
-                cylinder_start_array_x = np.append(cylinder_start_array_x, loc_csi_x_coord)
-                cylinder_start_array_y = np.append(cylinder_start_array_y, loc_csi_y_coord)
-                cylinder_start_array_z = np.append(cylinder_start_array_z, loc_csi_z_coord)
-print("Cylinder source x starting values: ", cylinder_start_array_x)
+radius_start = radius
+"""for c_s_i_v in range(int(height / start_array_step)):
+    loc_csi_z_coord = c_s_i_v * start_array_step - (height / 2) + (height / (start_array_step * 2))
+    cylinder_start_array_z = np.append(cylinder_start_array_z, loc_csi_z_coord)
+for c_s_i_hx in range(int(radius_start * 2 / start_array_step)):
+    for c_s_i_hy in range(int(radius_start * 2 / start_array_step)):
+        #loc_index_csi = c_s_i_v * int(radius_start * radius_start * 4 / (start_array_step**2)) + c_s_i_hx * int(radius_start * 2 / start_array_step) + c_s_i_hy
+        #loc_csi_z_coord = c_s_i_v * start_array_step - (height / 2) + (height / (start_array_step * 2))
+        loc_csi_x_coord = c_s_i_hx * start_array_step - radius_start + (radius_start / start_array_step)
+        loc_csi_y_coord = c_s_i_hy * start_array_step - radius_start + (radius_start / start_array_step)
+        if loc_csi_x_coord**2 + loc_csi_y_coord**2 <= radius_start**2:
+            cylinder_start_array_x = np.append(cylinder_start_array_x, loc_csi_x_coord)
+            cylinder_start_array_y = np.append(cylinder_start_array_y, loc_csi_y_coord)
+            #cylinder_start_array_z = np.append(cylinder_start_array_z, loc_csi_z_coord)
+print("Cylinder source x starting values: ", cylinder_start_array_x)"""
 # collection of photons param
 collection_sphere_radius = 6 * 10**4
-apperture_radius = 1 * 10**4
+apperture_radius = 3 * 10**4
 R = collection_sphere_radius
-for ii in range(num_steps):
-    start_x = 0 + (source_step * ii)
+source_step = 4 * 10**3
+for grand_i in range(len(ph_per_decay_array_core)):
+    number_of_photons_per_decay = ph_per_decay_array[grand_i]
+    start_x = 0  #+ (source_step * ii)
     start_y = 0
     start_z = 0
     # start_z = height/2 - 1
@@ -207,8 +218,16 @@ for ii in range(num_steps):
     new_start_z = start_z
     num_of_zeroes = 0
     #chance_of_interaction_per_micron = chance_of_interaction_array[grand_i]   # percent
-    n_photons = 5000000
-    num_of_decays = int(n_photons/number_of_photons_per_decay)
+    n_photons = 500000
+    leftover_photons = n_photons
+    temp_list_batches = []
+    while leftover_photons > 0:
+        temp_this_decay = np.random.poisson(ph_per_decay_array_core[grand_i])
+        temp_list_batches.append(temp_this_decay)
+        leftover_photons = leftover_photons - temp_this_decay
+    #num_of_decays = int(n_photons/number_of_photons_per_decay)
+    num_of_decays = int(len(temp_list_batches))
+    temp_batch_array = np.asarray(temp_list_batches)
     num_angles = 3                     # for collection
     num_of_angles = 10 ** 2             # for random theta arrays
     random_iter = 10 ** 3
@@ -221,12 +240,11 @@ for ii in range(num_steps):
     r_h = np.zeros((num_angles, 3))
     r_v = np.zeros((num_angles, 3))
     rand_range = 1000
-    source_step = 4 * 10**3
     start_x = 0
     start_y = 0
     #start_z = 0
     start_z = height/2 - 1
-    Xc, Yc, Zc = data_for_cylinder_along_z(0, 0, radius, height)
+    #Xc, Yc, Zc = data_for_cylinder_along_z(0, 0, radius, height)
     start_time = time.time()
     inside = 1
     iteration = 0
@@ -245,15 +263,17 @@ for ii in range(num_steps):
     fig, ax = plt.subplots(2, 2)
     photon_list = []
     """_______________________start of the loop responsible for each photon packet (decay event)_____________________"""
-    for grand_i in range(len(ph_per_decay_array)):
+    for ii in range(num_steps):
         batch_counter = 0   # inside the batch
-        batch_array = np.zeros((num_steps, num_angles, num_of_decays))
+        batch_array = np.zeros((num_steps, num_angles, num_of_decays+1))
+        used_batch_photons = 0
         for i in range(n_photons):
-            my_index_source = np.random.randint(len(cylinder_start_array_x))
-            if i/number_of_photons_per_decay == int(i/number_of_photons_per_decay):
-                #new_start_x = start_x + cylinder_start_array_x[my_index_source]          # + random.randrange(-rand_range*10, rand_range*10)
-                #new_start_y = start_y + cylinder_start_array_y[my_index_source]          # + random.randrange(-rand_range*10, rand_range*10)
-                #new_start_z = start_z + cylinder_start_array_z[my_index_source]          # + random.randrange(-rand_range*20, rand_range*20)
+            if used_batch_photons == temp_batch_array[batch_counter]:
+                #my_index_source_xy = np.random.randint(len(cylinder_start_array_x))
+                #my_index_source_z = np.random.randint(len(cylinder_start_array_z))
+                #new_start_x = start_x + cylinder_start_array_x[my_index_source_xy]          # + random.randrange(-rand_range*10, rand_range*10)
+                #new_start_y = start_y + cylinder_start_array_y[my_index_source_xy]          # + random.randrange(-rand_range*10, rand_range*10)
+                #new_start_z = start_z + cylinder_start_array_z[my_index_source_z]          # + random.randrange(-rand_range*20, rand_range*20)
                 batch_counter += 1
                 laser_rand_ind = np.random.randint(laser_array_length)
                 new_start_x = start_x + laser_array[laser_rand_ind][0]
@@ -261,6 +281,8 @@ for ii in range(num_steps):
                 new_start_z = np.random.randint(int(height/100))*100 - int(height/2)
                 #print("Batch number = ", batch_counter)
                 #print("Photon number = ", i+1)
+                used_batch_photons = 0
+            used_batch_photons += 1
             x = new_start_x
             y = new_start_y
             z = new_start_z
@@ -304,6 +326,7 @@ for ii in range(num_steps):
                 theta_dir = np.arccos(direction_vector[2] / np.sqrt(direction_vector[0] ** 2 + direction_vector[1] ** 2 + direction_vector[2] ** 2))
                 reflect_iter = 0
                 leftover_iter = n_steps
+                """____________________________Checking if the photon leaves the aerogel or reflects back__________________"""
                 if virtual_z > height/2 or virtual_z < -height/2 or virtual_x**2 + virtual_y**2 > radius**2:
                     a = b = c = a1 = b1 = c1 = a2 = b2 = c2 = 0
                     while inside == 1 and reflect_iter < 100 and leftover_iter > 0:
@@ -340,6 +363,7 @@ for ii in range(num_steps):
                         temp_phi = np.sign(direction_vector[1]) * np.arccos(direction_vector[0] /
                                                                             np.sqrt(direction_vector[0] ** 2 + direction_vector[1] ** 2))
                         if t_cylinder > t_plane:
+                            """_________________Photon collides with a horizontal plane of the cylinder_____________________"""
                             leftover_iter = leftover_iter - t_plane
                             intersection_x = x + direction_vector[0] * t_plane
                             intersection_y = y + direction_vector[1] * t_plane
@@ -374,6 +398,7 @@ for ii in range(num_steps):
                                 y = intersection_y
                                 z = intersection_z
                         elif t_cylinder < t_plane:
+                            """___________________Photon collides with the curved part of the cylinder______________"""
                             leftover_iter = leftover_iter - t_cylinder
                             intersection_x = x + direction_vector[0] * t_cylinder
                             intersection_y = y + direction_vector[1] * t_cylinder
@@ -382,6 +407,7 @@ for ii in range(num_steps):
                             a1, b1, c1 = direction_vector[0], direction_vector[1], direction_vector[2]
                             a2, b2, c2 = intersection_x / radius, intersection_y / radius, 0
                             if a1**2 == a2**2 and b1**2 == b2**2 and c1**2 == c2**2:            #  outside
+                                """Check again, something does not add up, but should not trigger often anyway"""
                                 inside = 0
                                 break
                             angle_intersection_under_sin = (a1*a2 + b1*b2 + c1*c2)/(np.sqrt(a1**2 + b1**2 + c1**2) * np.sqrt(a2**2 + b2**2 + c2**2))
@@ -506,7 +532,7 @@ for ii in range(num_steps):
             y_last_arr[i] = y
             z_last_arr[i] = z
             r_loc = math.sqrt(x0**2 + y0**2 + z0**2)
-            num_of_zeroes += 1 - (1 * bool(inside))
+            num_of_zeroes += 1 + (1 * bool(inside))
             # x = x0 + direction_vector[0] * n
             # y = y0 + direction_vector[1] * n
             # z = z0 + direction_vector[2] * n
@@ -530,7 +556,7 @@ for ii in range(num_steps):
             x_arr[i] = x0 + direction_vector[0] * n
             y_arr[i] = y0 + direction_vector[1] * n
             z_arr[i] = z0 + direction_vector[2] * n
-            batch_n = int(i / number_of_photons_per_decay)
+            batch_n = int(batch_counter)
             photon_list.append(Photon(i, x_arr[i], y_arr[i], z_arr[i], batch_n, 0))
         # Matrix method
         """x0 = position_all[:, 0]
@@ -578,9 +604,12 @@ for ii in range(num_steps):
         print("Number of photons inside the sphere = ", len(x_coord) - num_of_zeroes)
         all_coord = np.asarray((x_coord, y_coord, z_coord))
         all_coord = np.transpose(all_coord)
-        file_name = "Bottom-C_wide4mm_all_photons_TDCR_Center_beam_particles_" + str(int(ph_per_decay_array[grand_i])) + \
+        file_name = "Fin_tallaerogel-poisson_all_photons_TDCR_Center_beam_particles_" + str(int(ph_per_decay_array_core[grand_i])) + \
                   "ph-per-decay_" + f"{chance_of_interaction_per_micron:.3f}percent-prob-per-micron_Reflection.txt"
         np.savetxt(file_name, all_coord)
+        file_name_batches = "Fin_tallaerogel-poisson_batches_TDCR_Center_beam_particles_" + str(int(ph_per_decay_array_core[grand_i])) + \
+                            "ph-per-decay_" + f"{chance_of_interaction_per_micron:.3f}percent-prob-per-micron_Reflection.txt"
+        np.savetxt(file_name_batches, temp_batch_array)
         """with open(file_name, "r") as read_file:
             temp_all_coord = np.loadtxt(read_file)
         x_coord, y_coord, z_coord = np.hsplit(temp_all_coord, [1, 2])"""
@@ -610,10 +639,16 @@ for ii in range(num_steps):
             #c = - a0 * math.sin(phi_rad)
             counts = 0
             ca_counter = 0
+            temp_used_batch_photons = 0
+            temp_batch_counter = 0
             for k in range(len(x_coord)):
+                if temp_used_batch_photons == temp_batch_array[temp_batch_counter]:
+                    temp_used_batch_photons = 0
+                    temp_batch_counter += 1
+                temp_used_batch_photons += 1
                 if a * x_coord[k] + b * y_coord[k] >= d:
                     counts += 1
-                    batch_array[ii, phi_d, int(k / number_of_photons_per_decay)] += 1
+                    batch_array[ii, phi_d, int(temp_batch_counter)] += 1
                 """current_decay_number += 1
                 if current_decay_number == number_of_photons_per_decay:
                     current_decay_number = 0
@@ -678,7 +713,7 @@ for ii in range(num_steps):
     save_out = np.asarray((angles, r1, r2, r3))
     save_out = np.transpose(save_out)
     r1h = r1
-    file_name_h = "Bottom-C_wide4mm_horizontal_collection_TDCR_" + str(int(apperture_radius / 10**3)) + "mm_" + str(int(ph_per_decay_array[grand_i])) + \
+    file_name_h = "Fin_tallaerogel-poisson_horizontal_collection_TDCR_" + str(int(apperture_radius / 10**3)) + "mm_" + str(int(ph_per_decay_array_core[grand_i])) + \
                   "ph-per-decay_" + f"{chance_of_interaction_per_micron:.3f}percent-prob-per-micron_Reflection.txt"
     np.savetxt(file_name_h, save_out)
     r1 = r_v[:, 0]
@@ -690,7 +725,7 @@ for ii in range(num_steps):
     ax[1].set_title("Vertical")
     save_out = np.asarray((angles, r1, r2, r3))
     save_out = np.transpose(save_out)
-    file_name_v = "Bottom-C_wide4mm_vertical_collection_TDCR_" + str(int(apperture_radius / 10**3)) + "mm_" + str(int(ph_per_decay_array[grand_i])) + \
+    file_name_v = "Fin_tallaerogel-poisson_vertical_collection_TDCR_" + str(int(apperture_radius / 10**3)) + "mm_" + str(int(ph_per_decay_array_core[grand_i])) + \
                   "ph-per-decay_" + f"{chance_of_interaction_per_micron:.3f}percent-ppm_Reflection.txt"
     np.savetxt(file_name_v, save_out)
     r1v = r1
@@ -706,7 +741,7 @@ for ii in range(num_steps):
     decay_step = 0.512
     coincidence_window = 40
     coincidence_window_2 = 400
-    steps_coincidence = int(coincidence_window / decay_step)
+    steps_coincidence = int(coincidence_window_2 / decay_step)
     decay_df = pd.read_excel("Radiolum_decay_512ps_YAG.xlsx")
     decay_prob = np.asarray(decay_df["Probability"])
     #detector_A = r1h[0]
@@ -741,36 +776,36 @@ for ii in range(num_steps):
                 timing_mins = np.array([max(decay_prob)+1, min(timing_temp_b), min(timing_temp_c)])
                 timing_supermin = min(timing_mins)
                 timing_mins = timing_mins - timing_supermin
-                if np.absolute(timing_mins[1] - timing_mins[2]) < coincidence_window:
+                if np.absolute(timing_mins[1] - timing_mins[2]) < coincidence_window_2:
                     d_BC += 1
                 continue
             if batch_array[ik_counter, 1, k_counter] == 0:
                 timing_mins = np.array([min(timing_temp_a), max(decay_prob)+1, min(timing_temp_c)])
                 timing_supermin = min(timing_mins)
                 timing_mins = timing_mins - timing_supermin
-                if np.absolute(timing_mins[0] - timing_mins[2]) < coincidence_window:
+                if np.absolute(timing_mins[0] - timing_mins[2]) < coincidence_window_2:
                     d_CA += 1
                 continue
             if batch_array[ik_counter, 2, k_counter] == 0:
                 timing_mins = np.array([min(timing_temp_a), min(timing_temp_b), max(decay_prob)+1])
                 timing_supermin = min(timing_mins)
                 timing_mins = timing_mins - timing_supermin
-                if np.absolute(timing_mins[0] - timing_mins[1]) < coincidence_window:
+                if np.absolute(timing_mins[0] - timing_mins[1]) < coincidence_window_2:
                     d_AB += 1
                 continue
             #___________________________Three detectors______________________________
             timing_mins = np.array([min(timing_temp_a), min(timing_temp_b), min(timing_temp_c)])
             timing_supermin = min(timing_mins)
             timing_mins = timing_mins - timing_supermin
-            if max(timing_mins) < coincidence_window:
+            if max(timing_mins) < coincidence_window_2:
                 triple_c += 1
-            if np.absolute(timing_mins[0] - timing_mins[1]) < coincidence_window:
+            if np.absolute(timing_mins[0] - timing_mins[1]) < coincidence_window_2:
                 d_AB += 1
-            if np.absolute(timing_mins[1] - timing_mins[2]) < coincidence_window:
+            if np.absolute(timing_mins[1] - timing_mins[2]) < coincidence_window_2:
                 d_BC += 1
-            if np.absolute(timing_mins[0] - timing_mins[2]) < coincidence_window:
+            if np.absolute(timing_mins[0] - timing_mins[2]) < coincidence_window_2:
                 d_CA += 1
-            if np.absolute(timing_mins[0] - timing_mins[1]) > coincidence_window and np.absolute(timing_mins[1] - timing_mins[2]) > coincidence_window and np.absolute(timing_mins[0] - timing_mins[2]) > coincidence_window:
+            if np.absolute(timing_mins[0] - timing_mins[1]) > coincidence_window_2 and np.absolute(timing_mins[1] - timing_mins[2]) > coincidence_window_2 and np.absolute(timing_mins[0] - timing_mins[2]) > coincidence_window_2:
                 num_of_missed_batches += 1
         double_coincidence = d_AB + d_BC + d_CA - 2 * triple_c
         print("D = ", double_coincidence)
@@ -796,7 +831,11 @@ for ii in range(num_steps):
         #plt.xticks(fin_out)
         #plt.title('Final values')
         #plt.show()
-        file_name_d = "Bottom-C_wide4mm_double-coincidence_TDCR_" + str(int(apperture_radius / 10**3)) + "mm_" + str(int(ph_per_decay_array[grand_i])) + \
-                  "ph-per-decay_" + f"{chance_of_interaction_per_micron:.3f}percent-prob-per-micron_Reflection_{ik_counter*4}mm.txt"
+        file_name_d = "Fin_tallaerogel-poisson_double-coincidence_TDCR_" + str(int(apperture_radius / 10**3)) + "mm_" + str(int(ph_per_decay_array_core[grand_i])) + \
+                      "ph-per-decay_" + f"{chance_of_interaction_per_micron:.3f}percent-prob-per-micron_Reflection_{ik_counter*4}mm.txt"
+        file_name_d_fig = "Fin_tallaerogel-poisson_double-coincidence_TDCR_" + str(int(apperture_radius / 10 ** 3)) + "mm_" + str(int(ph_per_decay_array_core[grand_i])) + \
+                          "ph-per-decay_" + f"{chance_of_interaction_per_micron:.3f}percent-prob-per-micron_Reflection_{ik_counter * 4}mm.png"
+        plt.savefig(file_name_d_fig, dpi=200)
+        plt.close()
         np.savetxt(file_name_d, fin_out)
 
